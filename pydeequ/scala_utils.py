@@ -9,11 +9,12 @@ class PythonCallback:
         self.gateway = gateway
         # P4j will return false if the callback server is already started
         # https://github.com/bartdag/py4j/blob/master/py4j-python/src/py4j/java_gateway.py
-        callback_server = self.gateway.get_callback_server(callback_server_parameters = CallbackServerParameters(port = 0))
+        callback_server = self.gateway.get_callback_server()
         # TODO clean
         if callback_server is None:
-            self.gateway.start_callback_server()
-            print("Python Callback server started!") # TODO Logging
+            self.gateway.start_callback_server(callback_server_parameters = CallbackServerParameters(port = 0))
+            self.gateway._python_proxy_port = callback_server.get_listening_port()
+            print("Python Callback server started at port %d !" % (self.gateway.get_callback_server().get_listening_port())) # TODO Logging
         elif callback_server.is_shutdown:
             callback_server.close()
             self.gateway.restart_callback_server()
